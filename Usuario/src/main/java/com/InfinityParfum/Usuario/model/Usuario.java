@@ -1,22 +1,27 @@
 package com.InfinityParfum.Usuario.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class Usuario {
 
+    @Id
     private Long id;
     private String nombre;
     private String correo;
 
-   
     public Usuario() {}
 
-    
     public Usuario(Long id, String nombre, String correo) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
     }
 
-    
+
+
+
     public Long getId() {
         return id;
     }
