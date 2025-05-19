@@ -1,4 +1,4 @@
-package com.infinityparfum.Pedidos;
+package com.infinityparfum.Envio;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class PedidosApplication {
+public class EnvioApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PedidosApplication.class, args);
+        SpringApplication.run(EnvioApplication.class, args);
     }
 
-    @Bean
+    @Bean(name = "envioRestTemplate")
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }

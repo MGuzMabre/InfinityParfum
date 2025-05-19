@@ -15,6 +15,7 @@ public class Pedidos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(name = "cliente_id", nullable = false)
     private Long clienteId;
 

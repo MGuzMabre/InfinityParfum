@@ -1,6 +1,10 @@
 package com.infinityparfum.Usuario.model;
+
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,9 +16,19 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Size(min = 3, max = 50)
     private String nombre;
+
+    @NotNull
+    @Email
     private String correo;
+
+    @NotNull
+    @Size(min = 8)
     private String contraseña;
+
+    private boolean activo = true; // Nuevo atributo para desactivar usuarios
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -27,16 +41,16 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(Long id, String nombre, String correo, String contraseña, Set<Rol> roles) {
+    public Usuario(Long id, String nombre, String correo, String contraseña, boolean activo, Set<Rol> roles) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
         this.contraseña = contraseña;
+        this.activo = activo;
         this.roles = roles;
     }
 
-
-
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -67,6 +81,14 @@ public class Usuario {
 
     public void setContraseña(String contraseña) {
         this.contraseña = contraseña;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public Set<Rol> getRoles() {

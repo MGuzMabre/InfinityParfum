@@ -35,6 +35,11 @@ public class EnvioController {
         return ResponseEntity.ok(envioService.actualizarEnvio(id, envio));
     }
 
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Envio> actualizarEstado(@PathVariable Long id, @RequestParam String estado) {
+        return ResponseEntity.ok(envioService.actualizarEstado(id, estado));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEnvio(@PathVariable Long id) {
         envioService.eliminarPorId(id);
