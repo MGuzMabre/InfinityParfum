@@ -1,57 +1,54 @@
 package com.infinityparfum.Pago.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.infinityparfum.Pago.model.Pago;
+import com.infinityparfum.Pago.repository.PagoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import org.springframework.http.HttpStatus;
+import java.util.List;
 
 @Service
 public class PagoService {
 
-    private List<Pago> listaPagos = new ArrayList<>();
+    @Autowired
+    private PagoRepository pagoRepository;
 
-    public PagoService() {
-        listaPagos.add(new Pago(1L, "Pago 1", "Tarjeta de Crédito", 150.0));
-        listaPagos.add(new Pago(2L, "Pago 2", "PayPal", 200.0));
-        listaPagos.add(new Pago(3L, "Pago 3", "Transferencia Bancaria", 300.0));
-    }
+    @Autowired
+    @Qualifier("pagoRestTemplate")
+    private RestTemplate restTemplate;
 
     public List<Pago> obtenerTodos() {
-        return listaPagos;
+        return pagoRepository.findAll();
     }
 
-    public Pago agregarPago(Pago pago) {
-        listaPagos.add(pago);
-        return pago;
+    public Pago crearPago(Pago pago) {
+        // Validar que el pedido exista en el microservicio de Pedidos
+        String url = "http://localhost:8082/pedidos/" + pago.getPedidoId();
+        try {
+            restTemplate.getForObject(url, Object.class);
+        } catch (Exception e) {
+            throw new RuntimeException("El pedido con ID " + pago.getPedidoId() + " no existe.");
+        }
+
+        return pagoRepository.save(pago);
     }
 
-    public List<Pago> agregarPagos(List<Pago> pagos) {
-        listaPagos.addAll(pagos);
-        return pagos;
-    }
-    
-    public Pago buscarPorId(Long id) {
-        return listaPagos.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pago no encontrado"));
+    public Pago obtenerPorId(Long id) {
+        return pagoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pago no encontrado con ID: " + id));
     }
 
-    public Pago actualizarPago(Long id, Pago datosActualizados) {
-        Pago pagoExistente = buscarPorId(id);
-        pagoExistente.setDescripcion(datosActualizados.getDescripcion());
-        pagoExistente.setMetodo(datosActualizados.getMetodo());
-        pagoExistente.setMonto(datosActualizados.getMonto());
-        return pagoExistente;
+    public Pago actualizarPago(Long id, Pago pago) {
+        Pago pagoExistente = obtenerPorId(id);
+        pagoExistente.setDescripcion(pago.getDescripcion());
+        pagoExistente.setMetodo(pago.getMetodo());
+        pagoExistente.setMonto(pago.getMonto());
+        return pagoRepository.save(pagoExistente);
     }
 
     public void eliminarPorId(Long id) {
-        Pago pagoAEliminar = buscarPorId(id);
-        listaPagos.remove(pagoAEliminar);
+        pagoRepository.deleteById(id);
     }
 }

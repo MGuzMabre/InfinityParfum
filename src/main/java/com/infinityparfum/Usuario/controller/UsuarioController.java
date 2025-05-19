@@ -1,17 +1,11 @@
-
 package com.infinityparfum.Usuario.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.infinityparfum.Usuario.model.Usuario;
 import com.infinityparfum.Usuario.service.UsuarioService;
@@ -35,27 +29,43 @@ public class UsuarioController {
 
     @PostMapping("/lista")
     public List<Usuario> crearUsuarios(@RequestBody List<Usuario> usuarios) {
-    List<Usuario> agregados = new ArrayList<>();
-    for (Usuario u : usuarios) {
-        agregados.add(usuarioService.agregarUsuario(u));
-    }
-    return agregados;
+        List<Usuario> agregados = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            agregados.add(usuarioService.agregarUsuario(u));
+        }
+        return agregados;
     }
 
     @GetMapping("/{id}")
     public Usuario obtenerUsuarioPorId(@PathVariable Long id) {
-    return usuarioService.buscarPorId(id);
-    }
-
-    public UsuarioService getUsuarioService() {
-        return usuarioService;
+        return usuarioService.buscarPorId(id);
     }
 
     @PutMapping("/{id}")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-    return usuarioService.actualizarUsuario(id, usuario);
+        return usuarioService.actualizarUsuario(id, usuario);
     }
 
-    public void setUsuarioService(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }}
+    @PostMapping("/{id}/rol")
+    public Usuario asignarRol(@PathVariable Long id, @RequestParam String nombreRol) {
+        return usuarioService.asignarRol(id, nombreRol);
+    }
+
+    @PutMapping("/{id}/desactivar")
+    public ResponseEntity<Usuario> desactivarUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioService.desactivarUsuario(id);
+        return ResponseEntity.ok(usuario);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarPorId(id);
+    }
+
+    // Nuevo endpoint para validar la existencia de un usuario
+    @GetMapping("/{id}/existe")
+    public ResponseEntity<Boolean> validarExistenciaUsuario(@PathVariable Long id) {
+        boolean existe = usuarioService.existeUsuario(id);
+        return ResponseEntity.ok(existe);
+    }
+}

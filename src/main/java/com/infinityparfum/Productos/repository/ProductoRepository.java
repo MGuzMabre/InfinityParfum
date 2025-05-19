@@ -7,11 +7,5 @@ import com.infinityparfum.Productos.model.Producto;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
+    boolean existsById(Long id);
 }
-
-
-
-
-
-
-

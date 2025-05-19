@@ -1,72 +1,62 @@
 package com.infinityparfum.Usuario.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.infinityparfum.Usuario.model.Usuario;
+import com.infinityparfum.Usuario.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.infinityparfum.Usuario.model.Usuario;
-
-import org.springframework.http.HttpStatus;
+import java.util.List;
 
 @Service
 public class UsuarioService {
 
-
-    
-    private List<Usuario> listaUsuarios = new ArrayList<>();
-
-    public UsuarioService() {
-        
-        listaUsuarios.add(new Usuario(1L, "Danilo Celis", "danilo@infinity.com"));
-        listaUsuarios.add(new Usuario(2L, "Matías Guzmán", "matias@infinity.com"));
-        listaUsuarios.add(new Usuario(3L, "Felipe Quezada", "felipe@infinity.com"));
-    }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public List<Usuario> obtenerTodos() {
-        return listaUsuarios;
+        return usuarioRepository.findAll();
     }
 
     public Usuario agregarUsuario(Usuario usuario) {
-        listaUsuarios.add(usuario);
-        return usuario;
-    }
-
-    public Usuario actualizarUsuario(Long id, Usuario datosActualizados) {
-        for (Usuario u : listaUsuarios) {
-            if (u.getId().equals(id)) {
-                u.setNombre(datosActualizados.getNombre());
-                u.setCorreo(datosActualizados.getCorreo());
-                return u;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
+        return usuarioRepository.save(usuario);
     }
 
     public Usuario buscarPorId(Long id) {
-        for (Usuario u : listaUsuarios) {
-            if (u.getId().equals(id)) {
-                return u;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
     }
-    
-    public void eliminarPorId(Long id) {
-        Usuario usuarioAEliminar = null;
 
-        for (Usuario u : listaUsuarios) {
-            if (u.getId().equals(id)) {
-                usuarioAEliminar = u;
-                break;
+    public Usuario actualizarUsuario(Long id, Usuario datosActualizados) {
+        Usuario usuarioExistente = buscarPorId(id);
+        usuarioExistente.setNombre(datosActualizados.getNombre());
+        usuarioExistente.setCorreo(datosActualizados.getCorreo());
+        usuarioExistente.setActivo(datosActualizados.isActivo());
+        return usuarioRepository.save(usuarioExistente);
             }
-        }
 
-        if (usuarioAEliminar != null) {
-            listaUsuarios.remove(usuarioAEliminar);
-        } else {
+    public Usuario asignarRol(Long id, String nombreRol) {
+        Usuario usuario = buscarPorId(id);
+        // Lógica para asignar un rol al usuario (implementar según tu modelo de roles)
+        return usuario;
+    }
+
+    public Usuario desactivarUsuario(Long id) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setActivo(false);
+        return usuarioRepository.save(usuario);
+    }
+
+    public void eliminarPorId(Long id) {
+        if (!usuarioRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
         }
+        usuarioRepository.deleteById(id);
+    }
+
+    // Nuevo método para validar la existencia de un usuario
+    public boolean existeUsuario(Long id) {
+        return usuarioRepository.existsById(id);
     }
 }

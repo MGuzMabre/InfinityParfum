@@ -1,12 +1,12 @@
 package com.infinityparfum.Pago.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.infinityparfum.Pago.model.Pago;
 import com.infinityparfum.Pago.service.PagoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/pagos")
@@ -16,32 +16,28 @@ public class PagoController {
     private PagoService pagoService;
 
     @GetMapping
-    public List<Pago> listarPagos() {
-        return pagoService.obtenerTodos();
+    public ResponseEntity<List<Pago>> listarPagos() {
+        return ResponseEntity.ok(pagoService.obtenerTodos());
     }
 
     @PostMapping
-    public Pago crearPago(@RequestBody Pago pago) {
-        return pagoService.agregarPago(pago);
-    }
-
-    @PostMapping("/lista")
-    public List<Pago> crearPagos(@RequestBody List<Pago> pagos) {
-        return pagoService.agregarPagos(pagos);
+    public ResponseEntity<Pago> crearPago(@RequestBody Pago pago) {
+        return ResponseEntity.ok(pagoService.crearPago(pago));
     }
 
     @GetMapping("/{id}")
-    public Pago obtenerPagoPorId(@PathVariable Long id) {
-        return pagoService.buscarPorId(id);
+    public ResponseEntity<Pago> obtenerPagoPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(pagoService.obtenerPorId(id));
     }
-    
+
     @PutMapping("/{id}")
-    public Pago actualizarPago(@PathVariable Long id, @RequestBody Pago pago) {
-        return pagoService.actualizarPago(id, pago);
+    public ResponseEntity<Pago> actualizarPago(@PathVariable Long id, @RequestBody Pago pago) {
+        return ResponseEntity.ok(pagoService.actualizarPago(id, pago));
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarPago(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarPago(@PathVariable Long id) {
         pagoService.eliminarPorId(id);
+        return ResponseEntity.noContent().build();
     }
 }

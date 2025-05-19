@@ -1,57 +1,96 @@
 package com.infinityparfum.Pedidos.service;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.infinityparfum.Pedidos.model.Pedidos;
-
+import com.infinityparfum.Pedidos.model.ItemPedido;
+import com.infinityparfum.Pedidos.repository.PedidosRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PedidosService {
 
-    private List<Pedidos> listaPedidos = new ArrayList<>();
+    @Autowired
+    private PedidosRepository pedidosRepository;
 
-    public PedidosService() {
-        listaPedidos.add(new Pedidos(1L, "Pedido 1", "Cliente A", 100.0));
-        listaPedidos.add(new Pedidos(2L, "Pedido 2", "Cliente B", 200.0));
-        listaPedidos.add(new Pedidos(3L, "Pedido 3", "Cliente C", 300.0));
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${usuarios.service.url}")
+    private String usuariosServiceUrl;
+
+    @Value("${productos.service.url}")
+    private String productosServiceUrl;
+
+    @Value("${pagos.service.url}")
+    private String pagosServiceUrl;
+
+    @Value("${envios.service.url}")
+    private String enviosServiceUrl;
+
+    public Pedidos agregarPedido(Pedidos pedido) {
+        // Validar cliente
+        String usuarioUrl = usuariosServiceUrl + "/usuarios/" + pedido.getClienteId() + "/existe";
+        Boolean usuarioExiste = restTemplate.getForObject(usuarioUrl, Boolean.class);
+        if (usuarioExiste == null || !usuarioExiste) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El cliente con ID " + pedido.getClienteId() + " no existe.");
+        }
+
+        // Validar productos y reducir stock
+        for (ItemPedido item : pedido.getItems()) {
+            String productoUrl = productosServiceUrl + "/productos/" + item.getProductoId();
+            restTemplate.getForObject(productoUrl, Object.class);
+
+            String stockUrl = productosServiceUrl + "/productos/" + item.getProductoId() + "/reducir-stock?cantidad="
+                    + item.getCantidad();
+            restTemplate.put(stockUrl, null);
+        }
+
+        return pedidosRepository.save(pedido);
+    }
+
+    public Pedidos asociarPago(Long pedidoId, Long pagoId) {
+        Pedidos pedido = pedidosRepository.findById(pedidoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado"));
+
+        String pagoUrl = pagosServiceUrl + "/pagos/" + pagoId;
+        restTemplate.getForObject(pagoUrl, Object.class);
+
+        pedido.setPagoId(pagoId);
+        return pedidosRepository.save(pedido);
+    }
+
+    public Pedidos asociarEnvio(Long pedidoId, Long envioId) {
+        Pedidos pedido = pedidosRepository.findById(pedidoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado"));
+
+        String envioUrl = enviosServiceUrl + "/envios/" + envioId;
+        restTemplate.getForObject(envioUrl, Object.class);
+
+        pedido.setEnvioId(envioId);
+        return pedidosRepository.save(pedido);
+
     }
 
     public List<Pedidos> obtenerTodos() {
-        return listaPedidos;
+        return pedidosRepository.findAll();
     }
 
-    public Pedidos agregarPedido(Pedidos pedido) {
-        listaPedidos.add(pedido);
-        return pedido;
-    }
-
-    public List<Pedidos> agregarPedidos(List<Pedidos> pedidos) {
-        listaPedidos.addAll(pedidos);
-        return pedidos;
-    }
-
-    public Pedidos buscarPorId(Long id) {
-        return listaPedidos.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado"));
-    }
-
-    public Pedidos actualizarPedido(Long id, Pedidos datosActualizados) {
-        Pedidos pedidoExistente = buscarPorId(id);
-        pedidoExistente.setDescripcion(datosActualizados.getDescripcion());
-        pedidoExistente.setCliente(datosActualizados.getCliente());
-        pedidoExistente.setTotal(datosActualizados.getTotal());
-        return pedidoExistente;
+    public Pedidos obtenerPorId(Long id) {
+        return pedidosRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado con ID: " + id));
     }
 
     public void eliminarPorId(Long id) {
-        Pedidos pedidoAEliminar = buscarPorId(id);
-        listaPedidos.remove(pedidoAEliminar);
+        if (!pedidosRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado con ID: " + id);
+        }
+        pedidosRepository.deleteById(id);
     }
 }

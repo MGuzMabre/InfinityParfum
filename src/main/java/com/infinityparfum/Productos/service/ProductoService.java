@@ -1,44 +1,31 @@
 package com.infinityparfum.Productos.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.infinityparfum.Productos.model.Producto;
+import com.infinityparfum.Productos.repository.ProductoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.infinityparfum.Productos.model.Producto;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
 @Service
 public class ProductoService {
 
-    private List<Producto> listaProductos = new ArrayList<>();
-
-    public ProductoService() {
-        listaProductos.add(new Producto(1L, "Perfume A", "Fragancia floral", 50.0));
-        listaProductos.add(new Producto(2L, "Perfume B", "Fragancia cítrica", 60.0));
-        listaProductos.add(new Producto(3L, "Perfume C", "Fragancia amaderada", 70.0));
-    }
+    @Autowired
+    private ProductoRepository productoRepository;
 
     public List<Producto> obtenerTodos() {
-        return listaProductos;
+        return productoRepository.findAll();
     }
 
     public Producto agregarProducto(Producto producto) {
-        listaProductos.add(producto);
-        return producto;
-    }
-
-    public List<Producto> agregarProductos(List<Producto> productos) {
-        listaProductos.addAll(productos);
-        return productos;
+        return productoRepository.save(producto);
     }
 
     public Producto buscarPorId(Long id) {
-        return listaProductos.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
+        return productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
     }
 
@@ -47,11 +34,29 @@ public class ProductoService {
         productoExistente.setNombre(datosActualizados.getNombre());
         productoExistente.setDescripcion(datosActualizados.getDescripcion());
         productoExistente.setPrecio(datosActualizados.getPrecio());
-        return productoExistente;
+        productoExistente.setStock(datosActualizados.getStock());
+        return productoRepository.save(productoExistente);
     }
 
     public void eliminarPorId(Long id) {
-        Producto productoAEliminar = buscarPorId(id);
-        listaProductos.remove(productoAEliminar);
+        if (!productoRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado");
+        }
+        productoRepository.deleteById(id);
+    }
+
+    public void reducirStock(Long id, Integer cantidad) {
+        Producto producto = buscarPorId(id);
+        if (producto.getStock() < cantidad) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock insuficiente");
+        }
+        producto.setStock(producto.getStock() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    public void aumentarStock(Long id, Integer cantidad) {
+        Producto producto = buscarPorId(id);
+        producto.setStock(producto.getStock() + cantidad);
+        productoRepository.save(producto);
     }
 }

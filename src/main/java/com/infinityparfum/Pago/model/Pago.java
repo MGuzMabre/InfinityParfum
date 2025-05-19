@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Pago {
@@ -12,14 +14,24 @@ public class Pago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    private Long pedidoId; // ID del pedido asociado al pago
+
+    @NotNull
     private String descripcion;
+
+    @NotNull
     private String metodo;
+
+    @NotNull
+    @Positive(message = "El monto debe ser mayor que 0")
     private Double monto;
 
     public Pago() {}
 
-    public Pago(Long id, String descripcion, String metodo, Double monto) {
+    public Pago(Long id, Long pedidoId, String descripcion, String metodo, Double monto) {
         this.id = id;
+        this.pedidoId = pedidoId;
         this.descripcion = descripcion;
         this.metodo = metodo;
         this.monto = monto;
@@ -33,8 +45,16 @@ public class Pago {
         this.id = id;
     }
 
+    public Long getPedidoId() {
+        return pedidoId;
+    }
+
+    public void setPedidoId(Long pedidoId) {
+        this.pedidoId = pedidoId;
+    }
+
     public String getDescripcion() {
-                return descripcion;
+        return descripcion;
     }
 
     public void setDescripcion(String descripcion) {
