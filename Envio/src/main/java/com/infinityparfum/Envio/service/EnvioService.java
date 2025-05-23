@@ -24,19 +24,20 @@ public class EnvioService {
     public Envio crearEnvio(Envio envio) {
         // Validar que el pedido exista en el microservicio de Pedidos
         String url = "http://localhost:8084/pedidos/" + envio.getPedidoId();
-        try {
+        try { 
             restTemplate.getForObject(url, Object.class);
-        } catch (Exception e) {
+        } catch (Exception e) { // En caso de que el pedido no exista o haya un error
             throw new RuntimeException("El pedido con ID " + envio.getPedidoId() + " no existe.");
+            
         }
-
+        // Si el pedido existe, se procede a crear el envío con estado "Pendiente"
         envio.setEstado("Pendiente");
         return envioRepository.save(envio);
     }
-
+    // Método para obtener un envío por ID
     public Envio obtenerPorId(Long id) {
-        return envioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Envio no encontrado con ID: " + id));
+        return envioRepository.findById(id) 
+                .orElseThrow(() -> new RuntimeException("Envio no encontrado con ID: " + id)); // Manejo de excepción si no se encuentra el envío
     }
 
     public Envio actualizarEnvio(Long id, Envio envio) {
