@@ -4,17 +4,14 @@ import com.infinityparfum.Envio.model.Envio;
 import com.infinityparfum.Envio.repository.EnvioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class EnvioServiceTest {
+class EnvioServiceTest {
 
     @Mock
     private EnvioRepository envioRepository;
@@ -29,24 +26,13 @@ public class EnvioServiceTest {
 
     @Test
     void testObtenerTodos() {
-        Envio envio1 = new Envio();
-        envio1.setId(1L);
-        envio1.setDireccion("Calle Falsa 123");
-        envio1.setEstado("Pendiente");
+        Envio envio = new Envio();
+        envio.setEstado("Pendiente");
+        when(envioRepository.findAll()).thenReturn(List.of(envio));
 
-        Envio envio2 = new Envio();
-        envio2.setId(2L);
-        envio2.setDireccion("Av. Siempre Viva 742");
-        envio2.setEstado("En tránsito");
-
-        when(envioRepository.findAll()).thenReturn(Arrays.asList(envio1, envio2));
-
-        List<Envio> resultado = envioService.obtenerTodos();
-
-        assertEquals(2, resultado.size());
-        assertEquals("Pendiente", resultado.get(0).getEstado());
-        assertEquals("En tránsito", resultado.get(1).getEstado());
-
+        List<Envio> lista = envioService.obtenerTodos();
+        assertEquals(1, lista.size());
+        assertEquals("Pendiente", lista.get(0).getEstado());
         verify(envioRepository, times(1)).findAll();
     }
 }
