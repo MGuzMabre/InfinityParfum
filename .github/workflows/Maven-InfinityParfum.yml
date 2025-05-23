@@ -20,8 +20,27 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build with Maven (skip tests)
-        run: mvn clean install -DskipTests
+      - name: Build and test Envio
+        run: |
+          echo ">> Compilando Envio"
+          mvn -f Envio/pom.xml clean install
 
-      - name: Run tests
-        run: mvn test
+      - name: Build and test Pago
+        run: |
+          echo ">> Compilando Pago"
+          mvn -f Pago/pom.xml clean install
+
+      - name: Build and test Pedidos
+        run: |
+          echo ">> Compilando Pedidos"
+          mvn -f Pedidos/pom.xml clean install
+
+      - name: Build and test Productos
+        run: |
+          echo ">> Compilando Productos"
+          mvn -f Productos/pom.xml clean install
+
+      - name: Build and test Usuario
+        run: |
+          echo ">> Compilando Usuario"
+          mvn -f Usuario/pom.xml clean install
