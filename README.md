@@ -68,7 +68,7 @@ Cada microservicio tiene su propia base de datos y se comunica con los demás a 
 
 Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
-- **Java 17** o superior.
+- **Java 21**.
 - **Maven** para gestionar dependencias.
 - **MySQL** para las bases de datos de los microservicios.
 - Un IDE como **IntelliJ IDEA** o **VS Code**.
