@@ -1,13 +1,11 @@
 package com.infinityparfum.Productos.service;
 
-import com.infinityparfum.Productos.model.Producto;
-import com.infinityparfum.Productos.repository.ProductoRepository;
+import com.infinityparfum.Productos.model.*;
+import com.infinityparfum.Productos.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 
 @Service
@@ -30,12 +28,12 @@ public class ProductoService {
     }
 
     public Producto actualizarProducto(Long id, Producto datosActualizados) {
-        Producto productoExistente = buscarPorId(id);
-        productoExistente.setNombre(datosActualizados.getNombre());
-        productoExistente.setDescripcion(datosActualizados.getDescripcion());
-        productoExistente.setPrecio(datosActualizados.getPrecio());
-        productoExistente.setStock(datosActualizados.getStock());
-        return productoRepository.save(productoExistente);
+        Producto producto = buscarPorId(id);
+        producto.setNombre(datosActualizados.getNombre());
+        producto.setDescripcion(datosActualizados.getDescripcion());
+        producto.setPrecio(datosActualizados.getPrecio());
+        producto.setStock(datosActualizados.getStock());
+        return productoRepository.save(producto);
     }
 
     public void eliminarPorId(Long id) {

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Entidad que representa un pago realizado para un pedido")
 @Entity
+@Table(name = "pago")
 public class Pago {
 
     @Schema(description = "ID del pago", example = "1")
@@ -16,15 +17,18 @@ public class Pago {
 
     @Schema(description = "ID del pedido asociado al pago", example = "12")
     @NotNull
+    @Column(name = "pedido_id")
     private Long pedidoId;
 
     @Schema(description = "Descripción del pago", example = "Pago con tarjeta")
     @NotNull
     private String descripcion;
 
-    @Schema(description = "Método de pago", example = "Transferencia")
+    @Schema(description = "Método de pago")
     @NotNull
-    private String metodo;
+    @ManyToOne
+    @JoinColumn(name = "metodo_id", nullable = false)
+    private MetodoPago metodo;
 
     @Schema(description = "Monto del pago", example = "19990")
     @NotNull
@@ -33,7 +37,7 @@ public class Pago {
 
     public Pago() {}
 
-    public Pago(Long id, Long pedidoId, String descripcion, String metodo, Double monto) {
+    public Pago(Long id, Long pedidoId, String descripcion, MetodoPago metodo, Double monto) {
         this.id = id;
         this.pedidoId = pedidoId;
         this.descripcion = descripcion;
@@ -65,11 +69,11 @@ public class Pago {
         this.descripcion = descripcion;
     }
 
-    public String getMetodo() {
+    public MetodoPago getMetodo() {
         return metodo;
     }
 
-    public void setMetodo(String metodo) {
+    public void setMetodo(MetodoPago metodo) {
         this.metodo = metodo;
     }
 

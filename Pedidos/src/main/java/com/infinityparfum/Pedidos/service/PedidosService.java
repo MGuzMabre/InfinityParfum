@@ -1,15 +1,17 @@
 package com.infinityparfum.Pedidos.service;
 
-import java.util.List;
-import com.infinityparfum.Pedidos.model.Pedidos;
 import com.infinityparfum.Pedidos.model.ItemPedido;
+import com.infinityparfum.Pedidos.model.Pedidos;
 import com.infinityparfum.Pedidos.repository.PedidosRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class PedidosService {
@@ -33,7 +35,7 @@ public class PedidosService {
     private String enviosServiceUrl;
 
     public Pedidos agregarPedido(Pedidos pedido) {
-        // Validar cliente
+        // Validar existencia del cliente
         String usuarioUrl = usuariosServiceUrl + "/usuarios/" + pedido.getClienteId() + "/existe";
         Boolean usuarioExiste = restTemplate.getForObject(usuarioUrl, Boolean.class);
         if (usuarioExiste == null || !usuarioExiste) {
@@ -44,12 +46,26 @@ public class PedidosService {
         // Validar productos y reducir stock
         for (ItemPedido item : pedido.getItems()) {
             String productoUrl = productosServiceUrl + "/productos/" + item.getProductoId();
-            restTemplate.getForObject(productoUrl, Object.class);
+            try {
+                restTemplate.getForObject(productoUrl, Object.class);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "El producto con ID " + item.getProductoId() + " no existe o no está disponible.");
+            }
 
-            String stockUrl = productosServiceUrl + "/productos/" + item.getProductoId() + "/reducir-stock?cantidad="
-                    + item.getCantidad();
+            String stockUrl = productosServiceUrl + "/productos/" + item.getProductoId()
+                    + "/reducir-stock?cantidad=" + item.getCantidad();
             restTemplate.put(stockUrl, null);
+
+            // Asociar el pedido a cada item para mantener la relación bidireccional
+            item.setPedido(pedido);
         }
+
+        // Calcular total automáticamente
+        double total = pedido.getItems().stream()
+                .mapToDouble(item -> item.getCantidad() * item.getPrecioUnitario())
+                .sum();
+        pedido.setTotal(total);
 
         return pedidosRepository.save(pedido);
     }
@@ -74,7 +90,6 @@ public class PedidosService {
 
         pedido.setEnvioId(envioId);
         return pedidosRepository.save(pedido);
-
     }
 
     public List<Pedidos> obtenerTodos() {
@@ -83,8 +98,8 @@ public class PedidosService {
 
     public Pedidos obtenerPorId(Long id) {
         return pedidosRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido no encontrado con ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Pedido no encontrado con ID: " + id));
     }
 
     public void eliminarPorId(Long id) {

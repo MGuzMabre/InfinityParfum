@@ -1,0 +1,26 @@
+package com.infinityparfum.Productos.model;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
+@Entity
+@Table(name = "producto_marca")
+public class ProductoMarca {
+    @EmbeddedId
+    private ProductoMarcaId id;
+
+    public ProductoMarcaId getId() { return id; }
+    public void setId(ProductoMarcaId id) { this.id = id; }
+}
+
+@Embeddable
+class ProductoMarcaId implements Serializable {
+    private Long productoId;
+    private Integer marcaId;
+
+    public Long getProductoId() { return productoId; }
+    public void setProductoId(Long productoId) { this.productoId = productoId; }
+
+    public Integer getMarcaId() { return marcaId; }
+    public void setMarcaId(Integer marcaId) { this.marcaId = marcaId; }
+}
