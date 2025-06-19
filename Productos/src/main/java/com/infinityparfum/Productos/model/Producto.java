@@ -1,44 +1,38 @@
 package com.infinityparfum.Productos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Entidad que representa un producto disponible para la venta")
 @Entity
 public class Producto {
 
+    @Schema(description = "ID único del producto", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Nombre del producto", example = "Perfume Ocean Blue")
     @NotNull
     private String nombre;
 
+    @Schema(description = "Descripción del producto", example = "Aroma fresco y duradero")
     @NotNull
     private String descripcion;
 
+    @Schema(description = "Precio del producto", example = "19990")
     @NotNull
     @Positive(message = "El precio debe ser mayor que 0")
     private Double precio;
 
+    @Schema(description = "Cantidad de stock disponible", example = "20")
     @NotNull
     @Positive(message = "El stock debe ser mayor o igual a 0")
     private Integer stock;
 
-    public Producto() {}
-
-    public Producto(Long id, String nombre, String descripcion, Double precio, Integer stock) {
-        this.id = id;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.stock = stock;
-    }
-
-    // Getters y Setters
+    
     public Long getId() {
         return id;
     }

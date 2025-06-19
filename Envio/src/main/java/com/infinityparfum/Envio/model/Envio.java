@@ -3,26 +3,34 @@ package com.infinityparfum.Envio.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Entidad que representa el estado de envío de un pedido")
 @Entity
 @Table(name = "envios")
 public class Envio {
 
+    @Schema(description = "ID único del envío", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // ID del pedido asociado al envío
+
+    @Schema(description = "ID del pedido asociado", example = "10")
     @NotNull
-    private Long pedidoId; // ID del pedido asociado al envío
-    // Dirección de envío
+    private Long pedidoId;
+
+    @Schema(description = "Dirección de entrega", example = "Calle Falsa 123")
     @NotNull
     private String direccion;
-    // Estado del envío
+
+    @Schema(description = "Estado actual del envío", example = "Pendiente")
     @NotNull
-    private String estado; // Estados posibles: "Pendiente", "En tránsito", "Entregado"
-    // Fecha y hora de envío
+    private String estado;
+
+    @Schema(description = "Fecha y hora del envío")
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaEnvio = LocalDateTime.now();
+
 
      
     public Long getId() {

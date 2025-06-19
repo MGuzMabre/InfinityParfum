@@ -2,17 +2,20 @@ package com.infinityparfum.Usuario.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashSet;
 import java.util.Set;
 
+@Schema(description = "Rol que puede tener un usuario (ej: ADMIN, CLIENTE)")
 @Entity
 @Table(name = "roles")
 public class Rol {
-
+    @Schema(description = "ID del rol", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Schema(description = "Nombre del rol", example = "CLIENTE")
     private String nombre;
 
     @ManyToMany(mappedBy = "roles")
