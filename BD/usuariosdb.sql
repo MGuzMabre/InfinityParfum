@@ -37,3 +37,34 @@ CREATE TABLE rol_permiso (
     FOREIGN KEY (permiso_id) REFERENCES permisos(id)
 );
 SELECT * FROM usuario;
+
+-- =========================
+-- Insertar roles necesarios
+-- =========================
+INSERT IGNORE INTO roles (nombre) VALUES ('CLIENTE');
+INSERT IGNORE INTO roles (nombre) VALUES ('ADMIN');
+
+-- =========================
+-- Ejemplo: insertar permisos básicos (opcional)
+-- =========================
+INSERT IGNORE INTO permisos (nombre, descripcion) VALUES ('CREAR_USUARIO', 'Permite crear usuarios');
+INSERT IGNORE INTO permisos (nombre, descripcion) VALUES ('VER_USUARIOS', 'Permite ver usuarios');
+INSERT IGNORE INTO permisos (nombre, descripcion) VALUES ('ASIGNAR_ROL', 'Permite asignar roles a usuarios');
+
+-- =========================
+-- Ejemplo: asignar permisos a roles (opcional)
+-- =========================
+-- Asignar todos los permisos a ADMIN
+INSERT IGNORE INTO rol_permiso (rol_id, permiso_id)
+SELECT r.id, p.id FROM roles r, permisos p WHERE r.nombre = 'ADMIN';
+
+-- Asignar permiso CREAR_USUARIO a CLIENTE (opcional)
+INSERT IGNORE INTO rol_permiso (rol_id, permiso_id)
+SELECT r.id, p.id FROM roles r, permisos p WHERE r.nombre = 'CLIENTE' AND p.nombre = 'CREAR_USUARIO';
+
+-- =========================
+-- Consulta rápida para verificar roles y permisos
+-- =========================
+SELECT * FROM roles;
+SELECT * FROM permisos;
+SELECT * FROM rol_permiso;

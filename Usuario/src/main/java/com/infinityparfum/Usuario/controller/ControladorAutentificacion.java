@@ -4,10 +4,6 @@ import com.infinityparfum.Usuario.model.Usuario;
 import com.infinityparfum.Usuario.Seguridad.JwtUtil;
 import com.infinityparfum.Usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +27,47 @@ public class ControladorAutentificacion {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Operation(summary = "Iniciar sesión y obtener token JWT", 
-        requestBody = @RequestBody(
-            required = true,
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(
-                value = "{ \"correo\": \"usuario@example.com\", \"contraseña\": \"12345678\" }"
-            ))
-        )
+    @Operation(
+        summary = "Iniciar sesión y obtener token JWT",
+        description = "Envía correo y contraseña en el body"
     )
     @ApiResponse(responseCode = "200", description = "Login exitoso, token JWT generado")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+        System.out.println("Intento de login con datos: " + loginData);
+
         String correo = loginData.get("correo");
         String contraseña = loginData.get("contraseña");
 
         try {
             Usuario usuario = usuarioService.buscarPorCorreo(correo);
+            System.out.println("Usuario encontrado: " + usuario);
 
-            if (usuario != null && passwordEncoder.matches(contraseña, usuario.getContraseña())) {
-                String token = jwtUtil.generarToken(correo);
-                return ResponseEntity.ok(Map.of("token", token));
+            if (usuario != null) {
+                System.out.println("Hash guardado: " + usuario.getContraseña());
+                boolean passwordMatch = passwordEncoder.matches(contraseña, usuario.getContraseña());
+                System.out.println("¿Password coincide?: " + passwordMatch);
+
+                if (passwordMatch) {
+                    String token = jwtUtil.generarToken(correo);
+                    System.out.println("Login exitoso, token generado.");
+                    return ResponseEntity.ok(Map.of("token", token));
+                } else {
+                    System.out.println("Contraseña incorrecta.");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                }
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                System.out.println("Usuario no encontrado.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
             }
 
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+            if (e.getMessage() != null && e.getMessage().contains("Usuario no encontrado")) {
+                System.out.println("Usuario no encontrado (excepción).");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+            }
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error en autenticación.");
         }
     }
 }
