@@ -54,4 +54,13 @@ public class EnvioController {
         envioService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Asociar transportista a un envío")
+    @PutMapping("/{envioId}/transportista/{transportistaId}")
+    public ResponseEntity<Void> asociarTransportista(
+            @PathVariable Long envioId,
+            @PathVariable Long transportistaId) {
+        envioService.asociarTransportista(envioId, transportistaId);
+        return ResponseEntity.noContent().build();
+    }
 }

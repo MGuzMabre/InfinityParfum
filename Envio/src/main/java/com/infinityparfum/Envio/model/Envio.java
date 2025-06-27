@@ -5,7 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Entidad que representa el estado de envío de un pedido")
+@Schema(
+    description = "Entidad que representa el estado de envío de un pedido",
+    example = "{\n" +
+            "  \"pedidoId\": 1,\n" +
+            "  \"direccion\": \"Calle Falsa 123\",\n" +
+            "  \"estado\": \"Pendiente\",\n" +
+            "  \"zonaEnvio\": { \"id\": 1 }\n" +
+            "}"
+)
 @Entity
 @Table(name = "envios")
 public class Envio {
@@ -30,6 +38,14 @@ public class Envio {
     @Schema(description = "Fecha y hora del envío")
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaEnvio = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "zona_envio_id")
+    @Schema(
+        description = "Zona de envío asociada",
+        example = "{ \"id\": 1, \"nombre\": \"Santiago Centro\", \"tarifa\": 3500 }"
+    )
+    private ZonaEnvio zonaEnvio;
 
 
      
@@ -71,5 +87,13 @@ public class Envio {
     // Método para establecer la fecha y hora de envío
     public void setFechaEnvio(LocalDateTime fechaEnvio) {
         this.fechaEnvio = fechaEnvio;
+    }
+
+    public ZonaEnvio getZonaEnvio() {
+        return zonaEnvio;
+    }
+
+    public void setZonaEnvio(ZonaEnvio zonaEnvio) {
+        this.zonaEnvio = zonaEnvio;
     }
 }

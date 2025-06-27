@@ -10,12 +10,15 @@ public class ZonaEnvio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(example = "1")
     private Integer id;
 
     @NotNull
+    @Schema(example = "Santiago Centro")
     private String nombre;
 
     @NotNull
+    @Schema(example = "3500")
     private Double tarifa;
 
     public Integer getId() { return id; }

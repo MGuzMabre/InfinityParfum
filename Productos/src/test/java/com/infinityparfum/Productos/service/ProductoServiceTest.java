@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.List;
 
@@ -59,13 +60,13 @@ class ProductoServiceTest {
         Producto productoExistente = new Producto();
         productoExistente.setNombre("Viejo");
         productoExistente.setDescripcion("desc");
-        productoExistente.setPrecio(10.0);
+        productoExistente.setPrecio(new BigDecimal("10.0"));
         productoExistente.setStock(5);
 
         Producto datos = new Producto();
         datos.setNombre("Nuevo");
         datos.setDescripcion("nueva desc");
-        datos.setPrecio(20.0);
+        datos.setPrecio(new BigDecimal("20.0"));
         datos.setStock(10);
 
         when(productoRepository.findById(1L)).thenReturn(Optional.of(productoExistente));
@@ -75,7 +76,7 @@ class ProductoServiceTest {
 
         assertEquals("Nuevo", resultado.getNombre());
         assertEquals("nueva desc", resultado.getDescripcion());
-        assertEquals(20.0, resultado.getPrecio());
+        assertTrue(new BigDecimal("20.0").compareTo(resultado.getPrecio()) == 0);
         assertEquals(10, resultado.getStock());
     }
 

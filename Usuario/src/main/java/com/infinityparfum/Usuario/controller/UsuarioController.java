@@ -5,6 +5,7 @@ import com.infinityparfum.Usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Usuarios", description = "Operaciones relacionadas con la gestión de usuarios")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -26,13 +28,36 @@ public class UsuarioController {
         return usuarioService.obtenerTodos();
     }
 
-    @Operation(summary = "Crear un nuevo usuario")
+    @Operation(
+        summary = "Crear un nuevo usuario",
+        description = "Crea un nuevo usuario con el rol CLIENTE asignado automáticamente"
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Rol CLIENTE no encontrado")
     })
     @PostMapping
-    public Usuario crearUsuario(@RequestBody Usuario usuario) {
+    public Usuario crearUsuario(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Datos necesarios para crear el usuario",
+            required = true,
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    name = "UsuarioSimple",
+                    summary = "Usuario básico sin roles",
+                    value = """
+                    {
+                      "nombre": "Juan Pérez",
+                      "correo": "juan@example.com",
+                      "contraseña": "12345678"
+                    }
+                    """
+                )
+            )
+        )
+        @RequestBody Usuario usuario
+    ) {
         return usuarioService.agregarUsuario(usuario);
     }
 

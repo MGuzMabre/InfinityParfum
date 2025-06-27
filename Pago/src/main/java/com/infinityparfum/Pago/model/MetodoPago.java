@@ -2,7 +2,9 @@ package com.infinityparfum.Pago.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Método de pago", example = "{ \"id\": 1, \"nombre\": \"Tarjeta\", \"detalles\": \"Visa, MasterCard\" }")
 @Entity
 public class MetodoPago {
 

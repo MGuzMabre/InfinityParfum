@@ -5,7 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Entidad que representa un pago realizado para un pedido")
+@Schema(
+    description = "Entidad que representa un pago realizado para un pedido",
+    example = "{\n" +
+            "  \"pedidoId\": 1,\n" +
+            "  \"descripcion\": \"Pago con tarjeta\",\n" +
+            "  \"metodo\": { \"id\": 1 }\n" +
+            "}")
 @Entity
 @Table(name = "pago")
 public class Pago {
