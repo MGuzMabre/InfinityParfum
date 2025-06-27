@@ -29,3 +29,15 @@ CREATE TABLE envio_transportista (
     FOREIGN KEY (envio_id) REFERENCES envio(id),
     FOREIGN KEY (transportista_id) REFERENCES transportista(id)
 );
+
+
+INSERT INTO zona_envio (nombre, tarifa) VALUES ('Santiago Centro', 3500);
+INSERT INTO zona_envio (nombre, tarifa) VALUES ('Providencia', 4000);
+INSERT INTO zona_envio (nombre, tarifa) VALUES ('Las Condes', 5000);
+INSERT INTO zona_envio (nombre, tarifa) VALUES ('Ñuñoa', 3800);
+INSERT INTO zona_envio (nombre, tarifa) VALUES ('Maipú', 4200);
+
+
+INSERT INTO transportista (nombre, rut, telefono) VALUES ('Juan Pérez', '12.345.678-9', '987654321');
+INSERT INTO transportista (nombre, rut, telefono) VALUES ('María González', '21.987.654-3', '912345678');
+INSERT INTO transportista (nombre, rut, telefono) VALUES ('Pedro Ramírez', '18.234.567-1', '923456789');

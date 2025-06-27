@@ -20,3 +20,4 @@ CREATE TABLE item_pedido (
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
 );
 
+SELECT * FROM pedidos;

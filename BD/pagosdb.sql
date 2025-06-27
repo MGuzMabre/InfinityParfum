@@ -15,3 +15,7 @@ CREATE TABLE pago (
     monto DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (metodo_id) REFERENCES metodo_pago(id)
 );
+-- Insertar métodos de pago básicos
+INSERT INTO metodo_pago (nombre, detalles) VALUES ('Tarjeta', 'Visa, MasterCard, etc.');
+INSERT INTO metodo_pago (nombre, detalles) VALUES ('Transferencia', 'Transferencia bancaria');
+INSERT INTO metodo_pago (nombre, detalles) VALUES ('Efectivo', 'Pago en efectivo');

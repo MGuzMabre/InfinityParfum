@@ -10,7 +10,3 @@ CREATE TABLE producto (
 );
 SELECT * FROM producto;
 
-
-
-
-
