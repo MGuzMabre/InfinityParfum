@@ -1,7 +1,9 @@
-package com.infinityparfum.Usuario.service;
+package com.infinityparfum.Usuario.Controller;
 
 import com.infinityparfum.Usuario.controller.PermisoController;
 import com.infinityparfum.Usuario.model.Permiso;
+import com.infinityparfum.Usuario.service.PermisoService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

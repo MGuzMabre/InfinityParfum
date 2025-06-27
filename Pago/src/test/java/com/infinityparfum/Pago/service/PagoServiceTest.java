@@ -3,6 +3,7 @@ package com.infinityparfum.Pago.service;
 import com.infinityparfum.Pago.model.MetodoPago;
 import com.infinityparfum.Pago.model.Pago;
 import com.infinityparfum.Pago.repository.PagoRepository;
+import com.infinityparfum.Pago.repository.MetodoPagoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 class PagoServiceTest {
 
     @Mock private PagoRepository pagoRepository;
+    @Mock private MetodoPagoRepository metodoPagoRepository;
     @Mock private RestTemplate restTemplate;
 
     @InjectMocks private PagoService pagoService;
@@ -45,6 +47,7 @@ class PagoServiceTest {
 
         // Simula que el pedido existe
         when(restTemplate.getForObject(contains("/pedidos/10"), eq(Object.class))).thenReturn(new Object());
+        when(metodoPagoRepository.findById(1)).thenReturn(Optional.of(new MetodoPago(1, "Tarjeta", null)));
         when(pagoRepository.save(pago)).thenReturn(pago);
 
         Pago resultado = pagoService.crearPago(pago);
@@ -113,5 +116,15 @@ class PagoServiceTest {
         doNothing().when(pagoRepository).deleteById(1L);
         pagoService.eliminarPorId(1L);
         verify(pagoRepository).deleteById(1L);
+    }
+
+    @Test
+    void testMetodoPagoPorId() {
+        when(metodoPagoRepository.findById(1)).thenReturn(Optional.of(new MetodoPago(1, "Tarjeta", null)));
+
+        MetodoPago metodoPago = metodoPagoRepository.findById(1).orElse(null);
+
+        assertNotNull(metodoPago);
+        assertEquals("Tarjeta", metodoPago.getNombre());
     }
 }

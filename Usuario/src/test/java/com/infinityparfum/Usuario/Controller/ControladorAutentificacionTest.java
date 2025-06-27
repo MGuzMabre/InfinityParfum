@@ -1,7 +1,8 @@
-package com.infinityparfum.Usuario.service;
+package com.infinityparfum.Usuario.Controller;
 
 import com.infinityparfum.Usuario.controller.ControladorAutentificacion;
 import com.infinityparfum.Usuario.model.Usuario;
+import com.infinityparfum.Usuario.service.UsuarioService;
 import com.infinityparfum.Usuario.Seguridad.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

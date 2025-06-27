@@ -1,7 +1,9 @@
-package com.infinityparfum.Usuario.service;
+package com.infinityparfum.Usuario.Controller;
 
 import com.infinityparfum.Usuario.controller.UsuarioController;
 import com.infinityparfum.Usuario.model.Usuario;
+import com.infinityparfum.Usuario.service.UsuarioService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
