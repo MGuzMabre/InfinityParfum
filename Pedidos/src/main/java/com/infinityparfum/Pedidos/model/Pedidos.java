@@ -7,7 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Entidad que representa un pedido de cliente")
+@Schema(
+    description = "Entidad que representa un pedido de cliente",
+    example = "{\n" +
+            "  \"clienteId\": 5,\n" +
+            "  \"estado\": \"Pendiente\",\n" +
+            "  \"items\": [\n" +
+            "    { \"productoId\": 10, \"cantidad\": 2, \"precioUnitario\": 15000 },\n" +
+            "    { \"productoId\": 12, \"cantidad\": 1, \"precioUnitario\": 25000 }\n" +
+            "  ]\n" +
+            "}"
+)
 @Entity
 @Table(name = "pedidos")
 public class Pedidos {

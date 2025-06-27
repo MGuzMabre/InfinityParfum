@@ -1,8 +1,13 @@
 package com.infinityparfum.Pedidos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
+@Schema(
+    description = "Item de un pedido",
+    example = "{ \"productoId\": 10, \"cantidad\": 2, \"precioUnitario\": 15000 }"
+)
 @Entity
 @Table(name = "item_pedido")
 public class ItemPedido {
